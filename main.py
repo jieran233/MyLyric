@@ -31,9 +31,17 @@ command = ("gdbus call --session --dest org.gnome.Shell --object-path /io/github
 # Initialize the Netease Cloud Music API
 netease_cloud_music_api = NeteaseCloudMusicApi()
 
+# Constants for lyrics html generation
+innerhtml_symbol = '{lyric}'
+paired_tag = 'p'
+all_lrc_class = 'lrc-all'
+
 # List of all lrc types
 all_lrc_types = ['lrc', 'klyric', 'tlyric', 'romalrc']
-all_lrc_new_types = []  # TBD
+
+# Generate html for all lrc type (e.g. 'lrc': '<p class="lrc">{lyric}</p>')
+all_lrc_types_html = {lrc_type: f'<{paired_tag} class="{all_lrc_class} {lrc_type}">{innerhtml_symbol}</{paired_tag}>'
+                      for lrc_type in all_lrc_types}
 
 # Time offset for lyrics (in seconds)
 offset = 0.5
@@ -44,7 +52,7 @@ last_path = last_lyrics_line = None
 lrc_list = lrc_parsed = valid_lrc_types = None
 
 
-def time_to_seconds(time_str):
+def time_to_seconds(time_str: str):
     """
     Convert time string in format 'hh:mm:ss', 'mm:ss', or 'ss' to seconds.
     """
@@ -143,7 +151,9 @@ def changedTitleCB(_title: str):
         data = ''
         for lrc_type in valid_lrc_types:
             if now_lyrics_line:
-                data += now_lyrics_line[lrc_type]['content'] + '<br/>'
+                lyric_html = (all_lrc_types_html[lrc_type]
+                              .replace(innerhtml_symbol, now_lyrics_line[lrc_type]['content']))
+                data += lyric_html
         data = data.rstrip('<br/>')
         socketio.emit('update', {'data': data})
 
@@ -197,5 +207,5 @@ if __name__ == '__main__':
 
 
     # Run the Flask app with SocketIO
-    socketio.run(app, allow_unsafe_werkzeug=True)
-    # socketio.run(app, allow_unsafe_werkzeug=True, host='0.0.0.0')
+    # socketio.run(app, allow_unsafe_werkzeug=True)
+    socketio.run(app, allow_unsafe_werkzeug=True, host='0.0.0.0')

@@ -1,18 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask-SocketIO Example</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
+    <title>MyLyric</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.min.js"></script>
     <script type="text/javascript" charset="utf-8">
-        var socket = io.connect('http://' + document.domain + ':' + location.port);
-        socket.on('update', function(data) {
-            document.getElementById('data').innerHTML = data.data;
+        $(document).ready(function () {
+            var content = $('.content');
+            var socket = io.connect('http://' + document.domain + ':' + location.port);
+            socket.on('update', function (data) {
+                content.html(data.data);
+
+                // Update font size
+                // Calculate the longest line length in the text
+                innerHTMLs = parseHTML(data.data)
+                console.log(innerHTMLs)
+                longest_line_length = innerHTMLs.reduce((max, str) => Math.max(max, str.length), 0);
+
+                // Calculate font size based on longest line length
+                // Formula: size = 160 / longest_line_length - 0.01
+                // Limit font size between MAX_SIZE and MIN_SIZE
+                // Reference: https://stackoverflow.com/a/28101004
+                console.log(longest_line_length);
+                size = 160 / longest_line_length - 0.01;
+                MAX_SIZE = 4
+                MIN_SIZE = 3
+                size = Math.min(MAX_SIZE, Math.max(MIN_SIZE, size));
+                content.css("font-size", size + "vw");
+            });
         });
+
+        /**
+         * Parses the innerHTML of HTML tags from a given text.
+         * @param {string} text - The text containing HTML tags.
+         * @returns {Array} An array containing the innerHTML of each HTML tag found in the text.
+         */
+        function parseHTML(text) {
+            var div = document.createElement('div');
+            div.innerHTML = text;
+
+            var elements = div.querySelectorAll('*');
+            var innerHTMLs = [];
+
+            for (var i = 0; i < elements.length; i++) {
+                innerHTMLs.push(elements[i].innerHTML);
+            }
+
+            return innerHTMLs;
+        }
+
+        // https://developer.mozilla.org/en-US/docs/Web/API/Element/requestFullscreen
+        function toggleFullscreen() {
+            let elem = document.querySelector("body");
+
+            if (!document.fullscreenElement) {
+                elem.requestFullscreen().catch((err) => {
+                    alert(
+                        `Error attempting to enable fullscreen mode: ${err.message} (${err.name})`,
+                    );
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
     </script>
+    <style type="text/css">
+        body {
+            background-color: black;
+            color: white
+        }
+
+        .container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+        }
+
+        .content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            flex-direction: column;
+        }
+
+        .lrc-all {
+            margin: 0;
+        }
+
+        .lrc {
+            font-weight: 700;
+        }
+
+        .klyric {
+
+        }
+
+        .tlyric {
+            
+        }
+
+        .romalrc {
+            font-weight: 100;
+            font-size: smaller;
+        }
+    </style>
 </head>
-<body>
-    <h2 id="data"></h2>
+
+<body onclick="toggleFullscreen()">
+    <div class="container">
+        <div class="content"></div>
+    </div>
 </body>
+
 </html>
