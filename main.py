@@ -143,7 +143,7 @@ def changedTitleCB(_title: str):
         data = ''
         for lrc_type in valid_lrc_types:
             data += now_lyrics_line[lrc_type]['content'] + '<br/>'
-        data.rstrip('<br/>')
+        data = data.rstrip('<br/>')
         socketio.emit('update', {'data': data})
 
 
