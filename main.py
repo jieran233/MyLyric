@@ -10,13 +10,23 @@ from music163key import get_decrypted_music163key
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 
-# Constants for title formatting and matching
+# Constants for supported operating system or desktop environment
+os_de = {'windows': 'win32', 'linux_gnome': 'gnome'}
+
+# Constants for title getting and matching (Windows)
 title_left = '<DeaDBeeF> '
 title_right = ' </DeaDBeeF>'
 title_match = f'{title_left}(.*?){title_right}'  # do not strip title_left or title_right here
 
-# Constants for supported operating system or desktop environment
-os_de = {'windows': 'win32', 'linux_gnome': 'gnome'}
+# Constants for title getting (GNOME)
+suffix_default = '</DeaDBeeF>'
+functions = {'title': 'getWindowsByTitle',
+             'prefix': 'getWindowsByPrefix',
+             'suffix': 'getWindowsBySuffix',
+             'substring': 'getWindowsBySubstring'}
+
+command = ("gdbus call --session --dest org.gnome.Shell --object-path /io/github/jieran233/GetAllTitlesOfWindows "
+           "--method io.github.jieran233.GetAllTitlesOfWindows.{} '{}'").format(functions['suffix'], suffix_default)
 
 # Initialize the Netease Cloud Music API
 netease_cloud_music_api = NeteaseCloudMusicApi()
@@ -143,8 +153,11 @@ if __name__ == '__main__':
     current_os_de = get_os_de()
     if current_os_de == os_de['windows']:
         import title_win as title
+        match_or_command = title_match
+
     elif current_os_de == os_de['linux_gnome']:
         import title_gnome as title
+        match_or_command = command
 
     # Initialize Flask app and SocketIO
     app = Flask(__name__)
@@ -167,7 +180,7 @@ if __name__ == '__main__':
         """
         Background task to monitor title changes.
         """
-        title.set_title_change_polling(callback=changedTitleCB, match=title_match)
+        title.set_title_change_polling(changedTitleCB, match_or_command)
 
 
     @socketio.on('connect')
