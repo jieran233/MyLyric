@@ -1,16 +1,22 @@
 import json
+import os
+import sys
+
 from NeteaseCloudMusic import NeteaseCloudMusicApi
+
 from lrc import *
 from music163key import get_decrypted_music163key
-import title_win
+
 from flask import Flask, render_template
 from flask_socketio import SocketIO
-
 
 # Constants for title formatting and matching
 title_left = '<DeaDBeeF> '
 title_right = ' </DeaDBeeF>'
 title_match = f'{title_left}(.*?){title_right}'  # do not strip title_left or title_right here
+
+# Constants for supported operating system or desktop environment
+os_de = {'windows': 'win32', 'linux_gnome': 'gnome'}
 
 # Initialize the Netease Cloud Music API
 netease_cloud_music_api = NeteaseCloudMusicApi()
@@ -48,14 +54,35 @@ def time_to_seconds(time_str):
         return None
 
 
-def changedTitleCB(title: str):
+def get_os_de():
+    """
+    Get operating system platform, and desktop environment for linux.
+    """
+
+    platform = sys.platform
+    if platform.startswith('win32'):
+        return os_de['windows']
+
+    elif platform.startswith('linux'):
+        # https://stackoverflow.com/a/2035664
+        desktop = os.environ.get('DESKTOP_SESSION')
+        if desktop:  # Not None
+            if desktop.startswith('gnome'):
+                return os_de['linux_gnome']
+            else:
+                raise Exception("Unsupported desktop environment (only gnome is supported)")
+    else:
+        raise Exception("Unsupported platform (only win32 and linux are supported)")
+
+
+def changedTitleCB(_title: str):
     """
     Callback function for title change.
     """
     global last_path, last_lyrics_line, lrc_list, lrc_parsed, valid_lrc_types
 
     # Parse title information
-    title_info = json.loads(title.lstrip(title_left).rstrip(title_right))
+    title_info = json.loads(_title.lstrip(title_left).rstrip(title_right))
     path = title_info['path']
     time = time_to_seconds(title_info['time'].split('/')[0])
     print(title_info)
@@ -111,6 +138,14 @@ def changedTitleCB(title: str):
 
 
 if __name__ == '__main__':
+
+    # Import library for getting titles corresponding to the system platform
+    current_os_de = get_os_de()
+    if current_os_de == os_de['windows']:
+        import title_win as title
+    elif current_os_de == os_de['linux_gnome']:
+        import title_gnome as title
+
     # Initialize Flask app and SocketIO
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'secret!'
@@ -132,7 +167,7 @@ if __name__ == '__main__':
         """
         Background task to monitor title changes.
         """
-        title_win.set_title_change_polling(callback=changedTitleCB, match=title_match)
+        title.set_title_change_polling(callback=changedTitleCB, match=title_match)
 
 
     @socketio.on('connect')

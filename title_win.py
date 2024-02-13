@@ -1,32 +1,27 @@
-import pywinctl as pwc  # Importing the pywinctl module for Windows control operations
-import time  # Importing the time module for sleep function
-import re  # Importing the re module for regular expressions
+import pywinctl as pwc
+import time
+import re
 
-match_default = r"<DeaDBeeF>(.*?)<\/DeaDBeeF>"  # Regular expression pattern for matching titles
+match_default = r"<DeaDBeeF>(.*?)<\/DeaDBeeF>"
 
 
-def _changedTitleCB(title: str):  # Callback function for handling title changes
-    print("NEW title", title)  # Printing the new title
+def _changedTitleCB(title: str):
+    print("NEW title", title)
 
 
 def set_title_change_polling(callback=_changedTitleCB, match=match_default):
-    """
-    Function to continuously poll for title changes and execute a callback function.
-
-    :param callback: Function to be called when a new title matching the pattern is found
-    :param match: Regular expression pattern to match titles
-    """
-    last_title = None  # Initializing last_title variable
-    while True:  # Infinite loop for continuous polling
+    last_title = None
+    while True:
         try:
-            for title in pwc.getAllTitles():  # Iterating over all titles
-                if re.match(match, title):  # Checking if the title matches the pattern
-                    if title != last_title:  # Checking if the title has changed
-                        last_title = title  # Updating last_title
-                        callback(title)  # Calling the callback function with the new title
-        except KeyboardInterrupt:  # Handling KeyboardInterrupt to exit the loop
-            break  # Exiting the loop
-        time.sleep(0.1)  # Sleeping for 0.1 seconds to avoid high CPU usage
+            for title in pwc.getAllTitles():
+                if re.match(match, title):
+                    if title != last_title:
+                        last_title = title
+                        callback(title)
+        except KeyboardInterrupt:
+            break
+        time.sleep(0.1)
+
 
 # def set_title_change_callback(callback=_changedTitleCB, match=match_default):
 #     matched_windows = pwc.getWindowsWithTitle(match, condition=pwc.Re.MATCH)
@@ -46,3 +41,6 @@ def set_title_change_polling(callback=_changedTitleCB, match=match_default):
 #             break
 #         i += 1
 #     npw.watchdog.stop()
+
+if __name__ == '__main__':
+    set_title_change_polling()
