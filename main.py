@@ -10,7 +10,7 @@ from flask_socketio import SocketIO
 # Constants for title formatting and matching
 title_left = '<DeaDBeeF> '
 title_right = ' </DeaDBeeF>'
-title_match = f'{title_left.strip()}(.*?){title_right.strip()}'
+title_match = f'{title_left}(.*?){title_right}'  # do not strip title_left or title_right here
 
 # Initialize the Netease Cloud Music API
 netease_cloud_music_api = NeteaseCloudMusicApi()
