@@ -8,9 +8,16 @@ See "Acknowledgments" below, I've sorted them according to the process, you shou
 
 ## How to use
 
-### Windows
+Edit preferences of DeaDBeeF (Edit > Preferences > UI/Misc > Player)
 
-### GNOME (Wayland or X)
+- Title bar text during playback: `\<DeaDBeeF\> {"status": "$if(%ispaused%,paused,playing)", "time": "%playback_time%/%length%", "path": "%path%"} \</DeaDBeeF\>`
+- Title bar text when stopped: `\<DeaDBeeF\>\</DeaDBeeF\>`
+
+Run `python main.py`
+
+Play music files downloaded from NetEase Cloud Music (`163 key` included in metadata) in DeaDBeeF
+
+Check `http://127.0.0.1:5000`
 
 ## Acknowledgments
 
@@ -28,9 +35,11 @@ In building this project, we would like to acknowledge the contributions of the 
 - Web server: [pallets/flask](https://github.com/pallets/flask)
 - WebSocket: [Flask-SocketIO](https://github.com/miguelgrinberg/Flask-SocketIO)
 
-`163 key` decrypting reference:
+`163 key` decrypting references:
 
 - [https://stageguard.top/2019/10/27/analyze-163-music-key/](https://web.archive.org/web/20230131233424/https://stageguard.top/2019/10/27/analyze-163-music-key/)
+- [XiaoMengXinX/Music163bot-Go](https://github.com/XiaoMengXinX/Music163bot-Go)
+  - [XiaoMengXinX/163KeyMarker](https://github.com/XiaoMengXinX/163KeyMarker)
 
 Lyric parsing references:
 
