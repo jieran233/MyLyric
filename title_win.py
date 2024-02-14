@@ -2,14 +2,16 @@ import pywinctl as pwc
 import time
 import re
 
-match_default = r"<DeaDBeeF>(.*?)<\/DeaDBeeF>"
+title_left = '<DeaDBeeF> '
+title_right = ' </DeaDBeeF>'
+title_match = f'{title_left}(.*?){title_right}'  # do not strip title_left or title_right here
 
 
 def _changedTitleCB(title: str):
     print("NEW title", title)
 
 
-def set_title_change_polling(callback=_changedTitleCB, match=match_default):
+def set_title_change_polling(callback=_changedTitleCB, match=title_match):
     last_title = None
     while True:
         try:
