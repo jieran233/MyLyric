@@ -4,3 +4,6 @@ mutagen
 pycryptodome
 Flask
 Flask-SocketIO
+hanzidentifier
+requests
+tqdm

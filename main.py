@@ -5,6 +5,8 @@ from NeteaseCloudMusic import NeteaseCloudMusicApi
 import lrc
 from os_de import *
 from music163key import get_decrypted_music163key
+import lang
+import fonts
 
 from flask import Flask, render_template
 from flask_socketio import SocketIO
@@ -23,16 +25,21 @@ elif current_os_de == os_de['linux_gnome']:
 netease_cloud_music_api = NeteaseCloudMusicApi()
 
 # Constants for lyrics html generation
-innerhtml_symbol = '{lyric}'
+innerhtml_placeholder = '{lyric}'
+lang_class_placeholder = '{lang}'
 paired_tag = 'p'
 all_lrc_class = 'lrc-all'
 
 # List of all lrc types
 all_lrc_types = ['lrc', 'klyric', 'tlyric', 'romalrc']
 
-# Generate html for all lrc type (e.g. 'lrc': '<p class="lrc">{lyric}</p>')
-all_lrc_types_html = {lrc_type: f'<{paired_tag} class="{all_lrc_class} {lrc_type}">{innerhtml_symbol}</{paired_tag}>'
+# Generate html for all lrc type (e.g. 'lrc': '<p class="lrc-all lrc {lang}">{lyric}</p>')
+all_lrc_types_html = {lrc_type: (f'<{paired_tag} class="{all_lrc_class} {lrc_type} {lang_class_placeholder}">'
+                                 f'{innerhtml_placeholder}</{paired_tag}>')
                       for lrc_type in all_lrc_types}
+
+# Download fonts
+fonts.download_fonts()
 
 # Time offset for lyrics (in seconds)
 offset = 0.5
@@ -121,8 +128,11 @@ def changedTitleCB(_title: str):
         data = ''
         for lrc_type in valid_lrc_types:
             if now_lyrics_line:
+                # Replace placeholders
+                _lrc = now_lyrics_line[lrc_type]['content']
                 lyric_html = (all_lrc_types_html[lrc_type]
-                              .replace(innerhtml_symbol, now_lyrics_line[lrc_type]['content']))
+                              .replace(innerhtml_placeholder, _lrc)
+                              .replace(lang_class_placeholder, lang.identify_language(_lrc)))
                 data += lyric_html
         data = data.rstrip('<br/>')
         socketio.emit('update', {'data': data})
@@ -143,7 +153,8 @@ if __name__ == '__main__':
         """
         Render index.html template.
         """
-        return render_template('index.html')
+        return render_template('index.html',
+                               fonts=fonts.fonts, font_family=fonts.font_family, languages=lang.languages)
 
 
     def background_thread():
@@ -166,5 +177,5 @@ if __name__ == '__main__':
 
 
     # Run the Flask app with SocketIO
-    socketio.run(app, allow_unsafe_werkzeug=True)
-    # socketio.run(app, allow_unsafe_werkzeug=True, host='0.0.0.0')
+    # socketio.run(app, allow_unsafe_werkzeug=True)
+    socketio.run(app, allow_unsafe_werkzeug=True, host='0.0.0.0')

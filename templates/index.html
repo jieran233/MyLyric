@@ -7,6 +7,10 @@
     <title>MyLyric</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.min.js"></script>
+    <!-- Not use dynamic loading of fonts because it can cause delays and flickering -->
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&family=Noto+Sans+KR:wght@100..900&family=Noto+Sans+SC:wght@100..900&family=Noto+Sans+TC:wght@100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif+JP&family=Noto+Serif+KR&family=Noto+Serif+SC&family=Noto+Serif+TC&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet"> -->
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function () {
             var content = $('.content');
@@ -69,9 +73,29 @@
 
     </script>
     <style type="text/css">
+        {% for family in fonts['families'] %}
+            {% if family.name == font_family %}
+                {% for font in family.fonts %}
+                    @font-face {
+                        font-family: '{{ font.name }}';
+                        src: url('{{ font.path }}');
+                    }
+                    .{{ languages[font.lang] }} {
+                        font-family: '{{ font.name }}', '{{ font.fallback }}';
+                        font-optical-sizing: auto;
+                        font-style: normal;
+                        {% if font.lang == 'en' %}
+                        font-variation-settings:
+                            "wdth" 100;
+                        {% endif %}
+                    }
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+
         body {
             background-color: black;
-            color: white
+            color: white;
         }
 
         .container {
@@ -95,22 +119,18 @@
             flex-direction: column;
         }
 
+
+        /* All lrc */
         .lrc-all {
             margin: 0;
         }
-
+        
+        /* Subtypes of lrc */
         .lrc {
             font-weight: 700;
         }
-
-        .klyric {
-
-        }
-
-        .tlyric {
-            
-        }
-
+        .klyric {}
+        .tlyric {}
         .romalrc {
             font-weight: 100;
             font-size: smaller;

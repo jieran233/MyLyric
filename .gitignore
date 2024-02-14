@@ -242,3 +242,5 @@ cython_debug/
 # MyLyric
 cache/
 unused_code/
+static/fonts/*
+!static/fonts/.gitkeep

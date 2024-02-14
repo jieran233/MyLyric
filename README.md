@@ -1,6 +1,6 @@
 # MyLyric
 
-Add live display of lyrics to music files downloaded from NetEase Cloud Music (`163 key` included in metadata) that are being played in DeaDBeeF (or Foobar2000)
+Add live display of lyrics to music files downloaded from NetEase Cloud Music (`163 key` included in metadata) that are being played in DeaDBeeF (or foobar2000)
 
 ## How it works
 
@@ -33,7 +33,15 @@ In building this project, we would like to acknowledge the contributions of the 
   - [tree/main/docs#获取歌词](https://github.com/2061360308/NeteaseCloudMusic_PythonSDK/tree/main/docs#%E8%8E%B7%E5%8F%96%E6%AD%8C%E8%AF%8D)
   - [Binaryify/NeteaseCloudMusicApi](https://web.archive.org/web/20231226220526/https://github.com/Binaryify/NeteaseCloudMusicApi)
 - Web server: [pallets/flask](https://github.com/pallets/flask)
+  -  Web template engine [pallets/jinja](https://github.com/pallets/jinja)
 - WebSocket: [Flask-SocketIO](https://github.com/miguelgrinberg/Flask-SocketIO)
+- Noto CJK fonts: [notofonts/noto-cjk](https://github.com/notofonts/noto-cjk)
+- Identify language of certain lyrics to use the corresponding font of CJK fonts
+  - Regex for matching Japanese: <https://gist.github.com/terrancesnyder/1345094>
+  - Regex for matching Korean: <https://regexr.com/3d0tf>
+  - Identify Chinese text as being Simplified or Traditional: [tsroten/hanzidentifier](https://github.com/tsroten/hanzidentifier)
+- Use an old Android mobile phone for showing lryics
+  - Disable screen timeout easily: [elastic-rock/KeepScreenOn](https://github.com/elastic-rock/KeepScreenOn)
 
 `163 key` decrypting references:
 
