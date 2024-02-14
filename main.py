@@ -61,26 +61,6 @@ def handle_exit(sig, frame):
 signal.signal(signal.SIGINT, handle_exit)
 
 
-def time_to_seconds(time_str: str):
-    """
-    Convert time string in format 'hh:mm:ss', 'mm:ss', or 'ss' to seconds.
-    """
-    components = time_str.split(':')
-    if len(components) == 1:
-        return float(components[0])
-    elif len(components) == 2:
-        minutes = int(components[0])
-        seconds = float(components[1])
-        return minutes * 60 + seconds
-    elif len(components) == 3:
-        hours = int(components[0])
-        minutes = int(components[1])
-        seconds = float(components[2])
-        return hours * 3600 + minutes * 60 + seconds
-    else:
-        return None
-
-
 def changedTitleCB(_title: str):
     """
     Callback function for title change.
@@ -90,7 +70,7 @@ def changedTitleCB(_title: str):
     # Parse title information
     title_info = json.loads(_title.lstrip(title.title_left).rstrip(title.title_right))
     path = title_info['path']
-    time = time_to_seconds(title_info['time'].split('/')[0])
+    time = lrc.time_to_seconds(title_info['time'].split('/')[0])
     print(title_info)
 
     # read music163key, retrieve lyric

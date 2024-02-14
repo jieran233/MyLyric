@@ -22,6 +22,23 @@ def parse_lrc(lrc: str):
     return parsed_lyrics
 
 
+def time_to_seconds(time_str: str):
+    components = time_str.split(':')
+    if len(components) == 1:
+        return float(components[0])
+    elif len(components) == 2:
+        minutes = int(components[0])
+        seconds = float(components[1])
+        return minutes * 60 + seconds
+    elif len(components) == 3:
+        hours = int(components[0])
+        minutes = int(components[1])
+        seconds = float(components[2])
+        return hours * 3600 + minutes * 60 + seconds
+    else:
+        return None
+
+
 def get_lyric_at_time(lyrics, time_point):
     filtered_times = [t for t in lyrics.keys() if
                       t <= time_point]  # Filter out times that are not before or at the given time
