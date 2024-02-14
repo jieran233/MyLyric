@@ -13,6 +13,12 @@ from flask_socketio import SocketIO
 # Get the system platform
 current_os_de = get_os_de()
 
+# Import library for getting titles corresponding to the system platform
+if current_os_de == os_de['windows']:
+    import title_win as title
+elif current_os_de == os_de['linux_gnome']:
+    import title_gnome as title
+
 # Initialize the Netease Cloud Music API
 netease_cloud_music_api = NeteaseCloudMusicApi()
 
@@ -64,9 +70,7 @@ def changedTitleCB(_title: str):
     global last_path, last_lyrics_line, lrc_list, lrc_parsed, valid_lrc_types
 
     # Parse title information
-    if current_os_de == os_de['windows']:
-        _title = _title.lstrip(title.title_left).rstrip(title.title_right)
-    title_info = json.loads(_title)
+    title_info = json.loads(_title.lstrip(title.title_left).rstrip(title.title_right))
     path = title_info['path']
     time = time_to_seconds(title_info['time'].split('/')[0])
     print(title_info)
@@ -125,14 +129,6 @@ def changedTitleCB(_title: str):
 
 
 if __name__ == '__main__':
-
-    # Import library for getting titles corresponding to the system platform
-    if current_os_de == os_de['windows']:
-        import title_win as title
-
-    elif current_os_de == os_de['linux_gnome']:
-        import title_gnome as title
-
     # Initialize Flask app and SocketIO
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'secret!'

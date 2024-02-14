@@ -2,7 +2,9 @@ import subprocess
 import ast
 import time
 
-suffix_default = '</DeaDBeeF>'
+title_left = '<DeaDBeeF> '
+title_right = ' </DeaDBeeF>'
+suffix_default = title_right
 functions = {'title': 'getWindowsByTitle',
              'prefix': 'getWindowsByPrefix',
              'suffix': 'getWindowsBySuffix',
@@ -50,7 +52,8 @@ def set_title_change_polling(callback=_changedTitleCB, _command=command):
         except KeyboardInterrupt:
             break
         except Exception as e:
-            print("Error:", e)
+            print("title_gnome Error:", e)
+            raise e
         time.sleep(0.1)
 
 
