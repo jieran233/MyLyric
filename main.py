@@ -2,7 +2,7 @@ import json
 
 from NeteaseCloudMusic import NeteaseCloudMusicApi
 
-from lrc import *
+import lrc
 from os_de import *
 from music163key import get_decrypted_music163key
 
@@ -111,7 +111,7 @@ def changedTitleCB(_title: str):
             if lrc_type in lyric_response_data and lyric_response_data[lrc_type]['lyric'] != '':
                 valid_lrc_types.append(lrc_type)
                 lrc_list[lrc_type] = lyric_response_data[lrc_type]['lyric'].splitlines()
-                lrc_parsed[lrc_type] = parse_lrc(lyric_response_data[lrc_type]['lyric'])
+                lrc_parsed[lrc_type] = lrc.parse_lrc(lyric_response_data[lrc_type]['lyric'])
 
         print(lyric_response_data)
 
@@ -119,7 +119,7 @@ def changedTitleCB(_title: str):
     now_lyrics_line = {}
     for lrc_type in valid_lrc_types:
         if lrc_parsed[lrc_type] != {}:
-            line = get_lyric_at_time(lrc_parsed[lrc_type], float(time + offset))[0]
+            line = lrc.get_lyric_at_time(lrc_parsed[lrc_type], float(time + offset))[0]
             content = lrc_list[lrc_type][line].split(']', 1)[1].strip()
             now_lyrics_line[lrc_type] = {'line': line, 'content': content}
 
