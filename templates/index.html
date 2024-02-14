@@ -16,26 +16,48 @@
             var content = $('.content');
             var socket = io.connect('http://' + document.domain + ':' + location.port);
             socket.on('update', function (data) {
+                // Fill received data into content
                 content.html(data.data);
 
                 // Update font size
                 // Calculate the longest line length in the text
-                innerHTMLs = parseHTML(data.data)
-                console.log(innerHTMLs)
-                longest_line_length = innerHTMLs.reduce((max, str) => Math.max(max, str.length), 0);
+                var innerHTMLs = parseHTML(data.data)
+                var fontSizes = $(".lrc-all").map(function() {
+                    return $(this).css("font-size");
+                }).get();
 
+                console.log(innerHTMLs)
+                console.log(fontSizes)
+
+                var longest_line_length = 0;
+                for (var i = 0; i < innerHTMLs.length; i++) {
+                    // Replace CJK characters with two letters
+                    var str = innerHTMLs[i].replace(/([一-龯ぁ-んァ-ンｧ-ﾝﾞﾟ\u3131-\u314e\u314f-\u3163\uac00-\ud7a3])/g, 'aa')
+                    console.log('str:', str)
+                    console.log('str.length:', str.length)
+
+                    // Calculate the font size multiple of this element relative to the base element
+                    var fontsize_multiplier = parseFloat(fontSizes[i]) / parseFloat(fontSizes[0]);
+                    console.log('fontsize_multiplier:', fontsize_multiplier)
+                    
+                    longest_line_length = Math.max(longest_line_length, str.length * fontsize_multiplier);
+                    console.log('longest_line_length:', longest_line_length)
+                }
+                updateAdaptiveFontSize(longest_line_length, content)
+            });
+        });
+
+        function updateAdaptiveFontSize(longest_line_length, content) {
                 // Calculate font size based on longest line length
                 // Formula: size = 160 / longest_line_length - 0.01
                 // Limit font size between MAX_SIZE and MIN_SIZE
                 // Reference: https://stackoverflow.com/a/28101004
-                console.log(longest_line_length);
                 size = 160 / longest_line_length - 0.01;
                 MAX_SIZE = 4
                 MIN_SIZE = 3
                 size = Math.min(MAX_SIZE, Math.max(MIN_SIZE, size));
                 content.css("font-size", size + "vw");
-            });
-        });
+        }
 
         /**
          * Parses the innerHTML of HTML tags from a given text.
@@ -128,12 +150,14 @@
         /* Subtypes of lrc */
         .lrc {
             font-weight: 700;
+            /* The font size of .lrc is the baseline used for adaptive font sizes, do not change it */
+            /* You can use font size relative values in other Subtypes of lrc, such as smaller */
         }
         .klyric {}
         .tlyric {}
         .romalrc {
             font-weight: 100;
-            font-size: smaller;
+            font-size: 66.67%;
         }
     </style>
 </head>
