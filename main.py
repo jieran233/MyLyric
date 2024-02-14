@@ -1,4 +1,5 @@
 import json
+import signal
 
 from NeteaseCloudMusic import NeteaseCloudMusicApi
 
@@ -10,7 +11,6 @@ import fonts
 
 from flask import Flask, render_template
 from flask_socketio import SocketIO
-
 
 # Get the system platform
 current_os_de = get_os_de()
@@ -48,6 +48,17 @@ offset = 0.5
 last_path = last_lyrics_line = None
 # Variables to store lrc related data
 lrc_list = lrc_parsed = valid_lrc_types = None
+
+
+def handle_exit(sig, frame):
+    print("Shutting down...")
+    # Clear screen before exit
+    socketio.emit('update', {'data': ''})
+    exit(0)
+
+
+# Register signal handler to capture SIGINT signal (CTRL+C)
+signal.signal(signal.SIGINT, handle_exit)
 
 
 def time_to_seconds(time_str: str):
