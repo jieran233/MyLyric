@@ -1,17 +1,14 @@
 import json
-import os
-import sys
 
 from NeteaseCloudMusic import NeteaseCloudMusicApi
 
 from lrc import *
+from os_de import *
 from music163key import get_decrypted_music163key
 
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 
-# Constants for supported operating system or desktop environment
-os_de = {'windows': 'win32', 'linux_gnome': 'gnome'}
 
 # Constants for title getting and matching (Windows)
 title_left = '<DeaDBeeF> '
@@ -72,25 +69,7 @@ def time_to_seconds(time_str: str):
         return None
 
 
-def get_os_de():
-    """
-    Get operating system platform, and desktop environment for linux.
-    """
 
-    platform = sys.platform
-    if platform.startswith('win32'):
-        return os_de['windows']
-
-    elif platform.startswith('linux'):
-        # https://stackoverflow.com/a/2035664
-        desktop = os.environ.get('DESKTOP_SESSION')
-        if desktop:  # Not None
-            if desktop.startswith('gnome'):
-                return os_de['linux_gnome']
-            else:
-                raise Exception("Unsupported desktop environment (only gnome is supported)")
-    else:
-        raise Exception("Unsupported platform (only win32 and linux are supported)")
 
 
 def changedTitleCB(_title: str):
@@ -207,5 +186,5 @@ if __name__ == '__main__':
 
 
     # Run the Flask app with SocketIO
-    # socketio.run(app, allow_unsafe_werkzeug=True)
-    socketio.run(app, allow_unsafe_werkzeug=True, host='0.0.0.0')
+    socketio.run(app, allow_unsafe_werkzeug=True)
+    # socketio.run(app, allow_unsafe_werkzeug=True, host='0.0.0.0')
