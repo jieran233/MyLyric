@@ -8,12 +8,20 @@ See "Acknowledgments" below, I've sorted them according to the process, you shou
 
 ## How to use
 
+> For Linux GNOME, this extension needs to be installed additionally: [jieran233/gnome-get-all-titles](https://github.com/jieran233/gnome-get-all-titles)
+>
+> ```shell
+> git clone https://github.com/jieran233/gnome-get-all-titles.git
+> cd gnome-get-all-titles
+> make && make install
+> ```
+
 Edit preferences of DeaDBeeF (Edit > Preferences > UI/Misc > Player)
 
 - Title bar text during playback: `\<DeaDBeeF\> {"status": "$if(%ispaused%,paused,playing)", "time": "%playback_time%/%length%", "path": "%path%"} \</DeaDBeeF\>`
 - Title bar text when stopped: `\<DeaDBeeF\>\</DeaDBeeF\>`
 
-Run `python main.py`
+Clone this repo, create venv and activate it, install requirements. Run `python main.py`
 
 Play music files downloaded from NetEase Cloud Music (`163 key` included in metadata) in DeaDBeeF
 
