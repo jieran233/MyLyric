@@ -84,7 +84,7 @@ def changedTitleCB(_title: str):
         # === '/lyric' api ===
         # https://github.com/2061360308/NeteaseCloudMusic_PythonSDK/tree/main/docs#%E8%8E%B7%E5%8F%96%E6%AD%8C%E8%AF%8D
         # - lrc: lrc
-        # - klyric: ???
+        # - klyric: may be it's deprecated word-by-word lyrics
         # - tlyric: translated lrc
         # - romalrc: romaji lrc
         # all are standard lrc format
@@ -95,8 +95,12 @@ def changedTitleCB(_title: str):
         lrc_parsed = {}
         valid_lrc_types = []
 
+        # Drop klyric data
+        lyric_response_data['klyric'] = {'version': 0, 'lyric': ''}
+
         # Parse and store lyrics data for each lrc type
         for lrc_type in all_lrc_types:
+            # Check if types of lrc that in lyric_response_data valid
             if lrc_type in lyric_response_data and lyric_response_data[lrc_type]['lyric'] != '':
                 valid_lrc_types.append(lrc_type)
                 lrc_list[lrc_type] = lyric_response_data[lrc_type]['lyric'].splitlines()
@@ -120,10 +124,11 @@ def changedTitleCB(_title: str):
         for lrc_type in valid_lrc_types:
             if now_lyrics_line:
                 # Replace placeholders
-                _lrc = now_lyrics_line[lrc_type]['content']
-                lyric_html = (all_lrc_types_html[lrc_type]
-                              .replace(innerhtml_placeholder, _lrc)
-                              .replace(lang_class_placeholder, lang.identify_language(_lrc)))
+                if lrc_type in now_lyrics_line:  # Check if types of lrc that in now_lyrics_line valid
+                    _lrc = now_lyrics_line[lrc_type]['content']
+                    lyric_html = (all_lrc_types_html[lrc_type]
+                                  .replace(innerhtml_placeholder, _lrc)
+                                  .replace(lang_class_placeholder, lang.identify_language(_lrc)))
                 data += lyric_html
         data = data.rstrip('<br/>')
         socketio.emit('update', {'data': data})
