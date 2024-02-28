@@ -130,7 +130,6 @@ def changedTitleCB(_title: str):
                                   .replace(innerhtml_placeholder, _lrc)
                                   .replace(lang_class_placeholder, lang.identify_language(_lrc)))
                 data += lyric_html
-        data = data.rstrip('<br/>')
         socketio.emit('update', {'data': data})
 
 
